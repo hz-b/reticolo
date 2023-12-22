@@ -1,3 +1,6 @@
+%% Octave specific fix to ignore avalange of warnings
+warning('off', 'Octave:possible-matlab-short-circuit-operator')
+
 %% Blazr Mimimal example
 
 % grating pitch
