@@ -112,11 +112,11 @@ classdef Blazr < handle
             if strcmp(material,'Rh')
                 load('n_rh.mat','E_eV','n_c')
             elseif strcmp(material,'Au')
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
             elseif strcmp(material,'Ni')
                 load('n_ni.mat','E_eV','n_c')
             else
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
                 warning('wrong material name, using Gold')
             end
             
@@ -181,11 +181,11 @@ classdef Blazr < handle
             if strcmp(material,'Rh')
                 load('n_rh.mat','E_eV','n_c')
             elseif strcmp(material,'Au')
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
             elseif strcmp(material,'Ni')
                 load('n_ni.mat','E_eV','n_c')
             else
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
                 warning('wrong material name, using Gold')
             end
             
@@ -269,11 +269,11 @@ classdef Blazr < handle
             if strcmp(material,'Rh')
                 load('n_rh.mat','E_eV','n_c')
             elseif strcmp(material,'Au')
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
             elseif strcmp(material,'Ni')
                 load('n_ni.mat','E_eV','n_c')
             else
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
                 warning('wrong material name, using Gold')
             end
             
@@ -339,11 +339,11 @@ classdef Blazr < handle
             if strcmp(material,'Rh')
                 load('n_rh.mat','E_eV','n_c')
             elseif strcmp(material,'Au')
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
             elseif strcmp(material,'Ni')
                 load('n_ni.mat','E_eV','n_c')
             else
-                load('n_gold.mat','E_eV','n_c')
+                load('n_au.mat','E_eV','n_c')
                 warning('wrong material name, using Gold')
             end
             
