@@ -1,5 +1,7 @@
 %% Octave specific fix to ignore avalange of warnings
 warning('off', 'Octave:possible-matlab-short-circuit-operator')
+% configure search path
+source("octaverc");
 
 %% Blazr Mimimal example
 

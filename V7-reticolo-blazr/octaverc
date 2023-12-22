@@ -1,0 +1,12 @@
+% Get the current user's home directory
+userHomePath = getenv("HOME");
+
+% Define the base path for RETICOLO
+reticoloBasePath = fullfile(userHomePath, "reticolo", "hzb-reticolo", "V7-reticolo-blazr");
+
+% Add various subpaths to the Octave path
+addpath(fullfile(reticoloBasePath));
+addpath(fullfile(reticoloBasePath, "data"));
+addpath(fullfile(reticoloBasePath, "RETICOLO V7"));
+addpath(fullfile(reticoloBasePath, "RETICOLO V7", "reticolo_allege"));
+
