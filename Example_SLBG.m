@@ -5,7 +5,7 @@ clear;
 %     input grating structure
 %
 %     ideal or measured profile for:
-%     1)blazed grating 2)lamellar grating
+%     blazed grating 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
