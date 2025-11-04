@@ -1,0 +1,148 @@
+%BMG_RCWA
+clear;retio
+
+%以nm为单位
+%膜层厚度读取，计算平均膜厚
+E_keV=2.5;
+wavelength=1.2398./E_keV;
+N= 5 ;  %50 达 1mm
+NN=N*2;
+d_spacing=6.5;
+gamma=0.45;
+
+
+% %profile from AFM
+% Prf=importdata('fiveGroove_03_1911_EMIL_600L_IBE_SN_13-0120-G9_pos05_Image00050_10x3_flex.txt');
+% Prf=Prf*1E9; % m to nm
+% repeat profile to multiple period
+% for i=1:1
+%     A=[];
+% A(:,1)=[Prf(:,1);Prf(:,1)+max(Prf(:,1))+0.001];
+% A(:,2)=[Prf(:,2);Prf(:,2)];
+% Prf=A;
+% end
+% 
+%%% or generate ideal one
+line=2400;%l/mm
+LD=1000./line.*1000;
+
+BA=0.86;%角度
+antiBA=3.69;%角度
+
+GD=LD.*tand(BA).*tand(antiBA)./(tand(BA)+tand(antiBA));
+D_BA=LD.*tand(antiBA)./(tand(BA)+tand(antiBA));
+Prf=[0,0;D_BA,GD;LD,0];
+
+% generate grid %unit nm
+x_L=Prf(end,1); x_step=10; x=linspace(0,x_L,round(x_L/x_step)+1);%
+z_L=max(Prf(:,2))+d_spacing*N+0.1; z_step=0.05; z=linspace(z_L,0,round(z_L/z_step)+1);%;
+LD=Prf(end,1);
+[X,Z]=meshgrid(x,z);
+% interplot the z of profilr based on x
+Prf_z=interp1(Prf(:,1)',Prf(:,2)',x);
+%%%折射率轮廓%%%%%
+%材料折射率参数读取
+n_subFile=importdata('Si_cxro_0.5_6keV.txt');n_subFile=n_subFile.data;
+n_AFile=importdata('20231017_cxro_Cr_density7.19.txt');n_AFile=n_AFile.data;
+n_SFile=importdata('20231017_cxro_C_density2.20.txt');n_SFile=n_SFile.data;
+n_inc=1;
+n_real_A=1-interp1(n_AFile(:,1),n_AFile(:,2),E_keV*1000);n_imag_A=interp1(n_AFile(:,1),n_AFile(:,3),E_keV*1000);
+n_real_S=1-interp1(n_SFile(:,1),n_SFile(:,2),E_keV*1000);n_imag_S=interp1(n_SFile(:,1),n_SFile(:,3),E_keV*1000);
+n_real_sub=1-interp1(n_subFile(:,1),n_subFile(:,2),E_keV*1000);n_imag_sub=interp1(n_subFile(:,1),n_subFile(:,3),E_keV*1000);
+n_A=n_real_A+n_imag_A*1i;
+n_S=n_real_S+n_imag_S*1i;
+n_sub=n_real_sub+n_imag_sub*1i;
+n=Z.*0;
+nAvg=gamma*(1-n_real_A)+(1-gamma)*(1-n_real_S);
+
+Zz=n; % to store the layer profile
+% generate model, add Optical constant
+for i=1:N
+    Prf0=Prf_z+d_spacing*(i-1);
+    Prf1=Prf_z+d_spacing*(i-1)+d_spacing*gamma;
+    Prf2=Prf_z+d_spacing*i;
+    if i==1
+        P=find(Z<Prf0);         Zz(P)=1; n(P)=n_sub;%substrate
+        P=find(Z>=Prf0&Z<Prf1);  Zz(P)=2; n(P)=n_A; % absorption layer
+        P=find(Z>=Prf1&Z<Prf2);  Zz(P)=3; n(P)=n_S; % spacing layer
+    elseif i==N %top layer
+        P=find(Z>=Prf2);         Zz(P)=4; n(P)=n_inc;% background
+        P=find(Z>=Prf0&Z<Prf1);  Zz(P)=2; n(P)=n_A; % absorption layer
+        P=find(Z>=Prf1&Z<Prf2);  Zz(P)=3; n(P)=n_S; % spacing layer     
+    else
+        P=find(Z>=Prf0&Z<Prf1);  Zz(P)=2; n(P)=n_A; % absorption layer
+        P=find(Z>=Prf1&Z<Prf2);  Zz(P)=3; n(P)=n_S; % spacing layer     
+    end
+end
+
+imagesc(Zz)
+% colormap(gca, 'jet')
+colorbar;
+% rowdist=ones(1,round(z_L/z_step)+1);
+rowdist=ones(1,round(z_L/z_step)+1);
+textures_tmp= [mat2cell(X,rowdist) mat2cell(n,rowdist)];
+for i = 1:round(z_L/z_step)+1
+    textures{i} = {textures_tmp{i,1}, textures_tmp{i,2}};
+end
+% texture_list=1:round(z_L/z_step)+1;
+% thicknessstep_list=ones(1,round(z_L/z_step)+1).*z_step;
+texture_list=1:round(z_L/z_step)+1;
+thicknessstep_list=ones(1,round(z_L/z_step)+1).*z_step;
+profile={thicknessstep_list,texture_list};%每层0.1nm，层序号top开始为1
+
+%estimate Inc
+ML_order=1;
+GR_groove=1;
+GR_order=4;
+ThetaBRAGG = asind(sqrt((ML_order*1.2398/(2*d_spacing*E_keV))^2+2*nAvg)) ;
+thetaEst=90-(ThetaBRAGG-asind(GR_order*1.2398/LD/E_keV/2/sind(ThetaBRAGG))) ;
+%RCWA
+te=[];tm=[];theta=[];
+plotprofile=1;
+% for theta_0=min(thetaEst-0.12,89.35):0.005:min(thetaEst+0.1,89.95)
+for theta_0=thetaEst
+    theta_0  
+    nn=GR_order*GR_groove+3;% ordres de fourier
+    k_parallel=n_inc*sin(theta_0*pi/180);
+    for te_tm=[1,-1]
+        parm=res0(te_tm);  %res0(1):TE;res0(-1):TM;% initialisation des parametres par defaut
+        aa=res1(wavelength,LD,textures,nn,k_parallel,parm);
+        % aa = res1(wavelength,period,textures,nn,k_parallel,parm)
+        %                     show if needed
+            x=linspace(-LD,LD,501);% on trace 2 periodes
+            parm.res3.trace=1 ; % trace automatique
+            parm.res3.cale=[];
+            parm.res3.npts=[10,80,10];
+            [e,z,o]=res3(x,aa,profile,1,parm);
+            axis square
+            set(gcf,'WindowStyle','docked')
+%         %plotprofile
+%         if plotprofile==1
+%             figure;
+%             x=linspace(-LD,LD,2*num_X+1);
+%             [e,z,index]=res3(x,aa,profile,1,parm);
+%             %[e,z,index] = res3(x,aa,profile,inc,parm)% Computation of the electromagnetic fields%profile1
+%             retcolor(x,z,real(index));xlabel('X');ylabel('Z');title('profile');axis equal;pause(eps)
+%             plotprofile=0;
+%         end
+        
+        % -1级次衍射效率
+        result=res2(aa,profile);%result = res2(aa, profile)
+        if te_tm==1
+            te=[te,result.inc_top_reflected.efficiency{-GR_order*GR_groove}];
+            theta=[theta,theta_0];
+        else
+            tm=[tm,result.inc_top_reflected.efficiency{-GR_order*GR_groove}];
+            avg_tetm=(te+tm)./2;
+            plot(theta,te,theta,tm,'--',theta,avg_tetm,'*');xlabel('theta');title('Diffraction efficiency');legend('TE','TM','AVG');ylabel('-1th diffraction efficiency');pause(eps);
+        end
+    end
+end
+
+retio
+
+%%%得到结果并读取参数及结构%%%%
+%%%优化算法程序%%%%
+%%%将新参数进行处理回到第一步%%%%
+
+A=[theta;te;tm;avg_tetm]'

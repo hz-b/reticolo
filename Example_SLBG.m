@@ -174,7 +174,9 @@ ef = res2(aa, profile, parm);
 idx_DesignOrder=find(a.FourierOrders:-1:0==a.GR_Order*a.GR_groove);
 Output(i,1)=ef.inc_top_reflected.efficiency(idx_DesignOrder);
 Output(i,2)=90-ef.inc_top_reflected.theta(idx_DesignOrder);
-disp(['En',num2str(a.photonEnergy_eV),'eV, diffraction efficiency at the first order:', num2str(round(Output(i,1),3)*100),'%,  Diffraction angle : ',num2str(Output(i,2)),'deg'])
+disp(['En', num2str(a.photonEnergy_eV), 'eV, diffraction efficiency at the first order: ', ...
+      num2str(round(Output(i,1)*1000)/1000*100), '%,  Diffraction angle : ', ...
+      num2str(Output(i,2)), 'deg'])
 eff=[eff,Output(i,1)];
 En=[En,a.photonEnergy_eV];
 i=i+1;
@@ -182,20 +184,20 @@ figure(10)
 plot(En,eff,'*'); xlabel('photonEnergy,eV'),ylabel('Diffraction efficiency');
 end
 
-select = input('wants to check the model refracx distribution? 1 = yes, 2 = No: ');
-if select == 1
-    parm.res3.trace = 1 ; % trace automatique
-    parm.res3.cale = [];
-    parm.res3.npts = [10,80,10];
+% select = input('wants to check the model refracx distribution? 1 = yes, 2 = No: ');
+% if select == 1
+%     parm.res3.trace = 1 ; % trace automatique
+%     parm.res3.cale = [];
+%     parm.res3.npts = [10,80,10];
     
-    if pol == 1 % 1:TE   -1:TM
-        einc =  ef.inc_top.PlaneWave_E(2);
-    else
-        einc =  ef.inc_top.PlaneWave_H(2);
-    end
-    % x x section; aa from res1, profile, 1,
-    [e,z,o] = res3(x,aa,profile,einc,parm);
-    axis square
-    set(gcf,'WindowStyle','docked')
-end
+%     if pol == 1 % 1:TE   -1:TM
+%         einc =  ef.inc_top.PlaneWave_E(2);
+%     else
+%         einc =  ef.inc_top.PlaneWave_H(2);
+%     end
+%     % x x section; aa from res1, profile, 1,
+%     [e,z,o] = res3(x,aa,profile,einc,parm);
+%     axis square
+%     set(gcf,'WindowStyle','docked')
+% end
 
