@@ -5,10 +5,65 @@ Each example builds the required structure (geometry, materials, and optical par
 
 ---
 
+### 🐧 Linux Installation
+
+#### Ubuntu / Debian
+You can install Octave from the official repositories:
+
+```bash
+sudo apt update
+sudo apt install octave octave-common octave-geometry octave-control
+```
+
+Optional: to install the graphical user interface (GUI) and plotting dependencies:
+
+```bash
+sudo apt install gnuplot-x11 liboctave-dev
+```
+
+Then launch Octave:
+
+```bash
+octave --gui
+```
+
+#### ❗ Known Issue
+
+When running Octave from the terminal or from Python, you may encounter the following error:
+
+```
+/usr/libexec/octave/8.4.0/exec/x86_64-pc-linux-gnu/octave-gui: symbol lookup error: /snap/core20/current/lib/x86_64-linux-gnu/libpthread.so.0: undefined symbol: __libc_pthread_init, version GLIBC_PRIVATE
+```
+
+This happens when Octave (often the **Snap** version) links against the wrong `libpthread.so.0` library provided by `/snap/core20/...`, instead of the system library from `/lib/x86_64-linux-gnu`.
+
+
+
+##### ✅ Permanent Solution (System-Wide)
+
+To make the fix permanent for all users, modify `/etc/environment`:
+
+```bash
+sudo nano /etc/environment
+```
+
+and then add the following line
+
+```bash
+LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu"
+```
+
+Then log out and back in (or reboot) to apply the changes.
+
+
+---
+
 ## 📁 Folder structure
 
 ```
 reticolo/
+├── V9                           # Reticolo V9
+├── V7-reticolo-blazr            # Reticolo V7 (with blazed grating support?)
 ├── Example_MLBG.m               # Multilayer Blazed Grating example
 ├── Example_SLBG.m               # Single-Layer Blazed Grating example
 ├── Example_SLAG.m               # Single-Layer Laminar Grating example
@@ -19,9 +74,9 @@ reticolo/
 
 ---
 
-## ⚙️ Common dependencies
+## Materials refractive index files
 
-All examples share the same helper functions and require:
+The material refractive index files required by the examples must be in the CXRO format. To download file for new material visist the [CXRO - INdex of Refraction](https://henke.lbl.gov/optical_constants/getdb2.html).
 
 - Material refractive index files named as:
   ```
@@ -32,15 +87,28 @@ All examples share the same helper functions and require:
   ...
   ```
   Each text file should contain three columns:
-  | Photon Energy [eV] | Re(1-n) | Im(1-n) |
+  | Photon Energy [eV] | Delta | Beta |
 
-The examples automatically add the `helpers/` folder to the MATLAB/Octave path at runtime.
 
 ---
 
-## 🧪 Example 1 — `Example_MLBG.m`: Multilayer Blazed Grating
 
-### Overview
+## 🧩 Helper functions
+
+### `estimateTheta.m`
+Computes the estimated grazing angle by combining Bragg’s law and the grating equation.  
+Inputs: materials, multilayer period, order, groove density, photon energy.  
+Output: estimated grazing incidence angle in degrees.
+
+### `efficiency_bgrML.m`
+Builds the 2D multilayer grating profile, computes its optical response with RETICOLO, and optionally plots the field distribution.  
+Inputs: geometry, materials, multilayer parameters, photon energy, polarization, and RETICOLO settings.  
+Output: RETICOLO structure `ef` containing efficiencies and angles for each diffracted order.
+
+---
+
+
+## 🧱 Example 1 — `Example_MLBG.m` 
 This example simulates a **multilayer-coated blazed grating (MLBG)** with a substrate and two materials alternating in the multilayer stack.  
 The multilayer period, number of bilayers, blaze angles, and photon energy are user-configurable.
 
@@ -66,38 +134,16 @@ The multilayer period, number of bilayers, blaze angles, and photon energy are u
 
 ---
 
-## 🧩 Helper functions
 
-### `estimateTheta.m`
-Computes the estimated grazing angle by combining Bragg’s law and the grating equation.  
-Inputs: materials, multilayer period, order, groove density, photon energy.  
-Output: estimated grazing incidence angle in degrees.
-
-### `efficiency_bgrML.m`
-Builds the 2D multilayer grating profile, computes its optical response with RETICOLO, and optionally plots the field distribution.  
-Inputs: geometry, materials, multilayer parameters, photon energy, polarization, and RETICOLO settings.  
-Output: RETICOLO structure `ef` containing efficiencies and angles for each diffracted order.
-
----
-
-## 🧱 Example 2 — `Example_SLBG.m` (placeholder)
+## 🧱 Example 2 — `Example_SLBG.m`
 Single-layer **blazed grating** with uniform coating on the grooves.  
-To be added.
+
 
 ---
 
-## 🧱 Example 3 — `Example_SLAG.m` (placeholder)
+## 🧱 Example 3 — `Example_SLAG.m` 
 Single-layer **laminar grating** (rectangular profile) with coating.  
-To be added.
 
 ---
 
-## 🧭 Usage
 
-Run from Octave or MATLAB:
-```
->> Example_MLBG
-```
-This will load the helper functions, compute the diffraction efficiency for a multilayer blazed grating, and produce a figure of `efficiency vs. grazing angle`.
-
----
