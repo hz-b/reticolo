@@ -1,4 +1,5 @@
 clear;
+warning('off', 'Octave:possible-matlab-short-circuit-operator');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
