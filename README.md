@@ -64,6 +64,7 @@ Then log out and back in (or reboot) to apply the changes.
 reticolo/
 ├── V9                           # Reticolo V9
 ├── V7-reticolo-blazr            # Reticolo V7 (with blazed grating support?)
+├── ZYQ_files                    # examples from ZYQ
 ├── Example_MLBG.m               # Multilayer Blazed Grating example
 ├── Example_SLBG.m               # Single-Layer Blazed Grating example
 ├── Example_SLAG.m               # Single-Layer Laminar Grating example
