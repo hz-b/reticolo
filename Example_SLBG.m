@@ -51,7 +51,6 @@ grazing_angle_deg = 2;% input('desired grazing incidence angle range) in deg: ')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 a = metadata;
 addpath('MODIFY HERE!!! PATH to here \V9\reticolo_allege_v9')
-retio
 eff=[];
 En=[];
 for photonEnergy_eV=metadata.photonEnergy_eV

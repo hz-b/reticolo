@@ -26,7 +26,7 @@ metadata.plSelect        = 1;
 metadata.ML_order      = 1;
 metadata.GR_groove     = 1;
 metadata.GR_order      = 1;
-metadata.photonEnergy_eV = 2500;
+metadata.photonEnergy_eV = 2000;
 
 % ------------------ LOOP DETECTION ------------------
 fields = fieldnames(metadata);
