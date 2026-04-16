@@ -48,7 +48,7 @@ metadata.FourierOrders = 5 ;%input('Harmonics: '); %or FourierOrders = GR_Order*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 metadata.photonEnergy_eV = 100:10:2000; %input(' which photon energy(range) wants to comput_in eV: ');:
-grazing_angle_deg = 2;% input('desired grazing incidence angle range) in deg: ');
+grazing_angle_deg = 4;% input('desired grazing incidence angle range) in deg: ');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
