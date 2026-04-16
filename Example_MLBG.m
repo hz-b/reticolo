@@ -6,7 +6,7 @@ addpath(genpath(fullfile(pwd, 'helpers')))
 
 % ------------------ METADATA SETUP ------------------
 metadata.grPeriod_lpermm = 2400;
-metadata.grBA_deg = 1;
+metadata.grBA_deg = 2;
 metadata.grAntiBA_deg = 3;
 
 metadata.material_sub = 'Si';
@@ -17,7 +17,7 @@ metadata.ML_d_nm     = 6.5;
 metadata.ML_d_HZtod  = 0.45;
 metadata.ML_N        = 60;
 
-metadata.z_resolution_nm = 1 %0.01;
+metadata.z_resolution_nm = 1 % 0.01;
 metadata.x_resolution_nm = 1;
 metadata.FourierOrders   = 5; % or FourierOrders = GR_order*GR_groove+3
 metadata.plSelect        = 1;
@@ -52,7 +52,7 @@ loopBounds = zeros(1, loopNumber);
 for i = 1:loopNumber
     IdxCurrent = loop.Idx{loopNumber};
     loopBounds(i) = length(metadata.(fields{IdxCurrent}));
-end
+ends
 
 % Output data containers
 outputdata0 = cell(1, prod(loopBounds, 2));
