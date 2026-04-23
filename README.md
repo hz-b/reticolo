@@ -77,18 +77,20 @@ reticolo/
 
 ## Materials refractive index files
 
-The material refractive index files required by the examples must be in the CXRO format. To download file for new material visist the [CXRO - INdex of Refraction](https://henke.lbl.gov/optical_constants/getdb2.html).
+The SLAG examples now load refractive index references from `RE_Sample_RF_file/` or `RE__Sample_RF_file/`.
 
-- Material refractive index files named as:
+- Material refractive index files are named as:
   ```
-  n_Si_cxro.txt
-  n_Cr_cxro.txt
-  n_C_cxro.txt
-  n_Au_cxro.txt
+  OC_ELISA_Si_p2.33.csv
+  OC_ELISA_Pt_p19.245.csv
+  OC_ELISA_Au_p19.32.csv
   ...
   ```
-  Each text file should contain three columns:
-  | Photon Energy [eV] | Delta | Beta |
+- Each CSV contains three columns separated by `;`:
+  | Energy [eV] | Delta | Beta |
+- Decimal notation uses `,` instead of `.`.
+- The example scripts load `n = 1 - delta + i*beta` from these files.
+- If a material has multiple density variants in the folder, set the matching `metadata.material_*_density` field in the SLAG script to select the right file.
 
 
 ---
@@ -146,5 +148,4 @@ Single-layer **blazed grating** with uniform coating on the grooves.
 Single-layer **laminar grating** (rectangular profile) with coating.  
 
 ---
-
 

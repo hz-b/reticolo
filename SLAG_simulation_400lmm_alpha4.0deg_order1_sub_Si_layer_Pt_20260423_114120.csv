@@ -1,0 +1,40 @@
+# SLAG Simulation Data
+# Generated with Example_SLAG_save_data.m
+#
+# === GRATING PARAMETERS ===
+# grating_period_lpermm: 400.0
+# diffraction_order: 1
+# grating_width_to_period_ratio: 0.33
+# grating_depth_nm: 14.9
+# trapezoid_angle_left_deg: 15.0
+# trapezoid_angle_right_deg: 15.0
+# substrate_material: Si
+# substrate_density: 2.330
+#
+# === LAYER PARAMETERS ===
+# layer_material: Pt
+# layer_thickness_nm: 28.8
+# layer_density: 20.132
+#
+# === SIMULATION PARAMETERS ===
+# z_resolution_nm: 0.1
+# x_resolution_nm: 1.0
+# fourier_orders: 25
+#
+# === INCIDENCE CONDITIONS ===
+# grazing_angle_deg: 4.0
+# photon_energy_min_eV: 140.0
+# photon_energy_max_eV: 160.0
+# photon_energy_step_eV: 5.0
+# polarization: -1.0
+#
+# === DATA COLUMNS ===
+# Column 1: photon_energy_eV
+# Column 2: diffraction_efficiency
+#
+# photon_energy_eV;diffraction_efficiency
+140.0000;0.17207505
+145.0000;0.17230292
+150.0000;0.17107129
+155.0000;0.16816369
+160.0000;0.16460947
