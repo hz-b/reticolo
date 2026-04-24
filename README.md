@@ -149,3 +149,11 @@ Single-layer **laminar grating** (rectangular profile) with coating.
 
 ---
 
+## Python Port
+
+This branch also includes a native Python port of the 1D RETICOLO path needed by `Example_SLAG.m`.
+
+- Entry point: `python3 example_slag.py`
+- Python solver module: `reticolo_py/`
+- Scope: the 1D TE workflow used by the SLAG example (`res0`, `res1`, `res2` shape-compatible helpers)
+- Validation: pytest plus an Octave parity check against the existing RETICOLO V9 implementation for a short SLAG energy sweep
