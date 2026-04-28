@@ -1,0 +1,53 @@
+# MLAG Simulation Data
+# Generated with MLAG.m
+#
+# === GRATING PARAMETERS ===
+# grating_period_lpermm: 400.0
+# diffraction_order: 1
+# grating_width_to_period_ratio: 0.67
+# grating_depth_nm: 14.9
+# trapezoid_angle_left_deg: 75.0
+# trapezoid_angle_right_deg: 75.0
+# substrate_material: Si
+#
+# === LAYER CONFIGURATION ===
+# active_layers: 2
+# layer1_material: Pt
+# layer1_Thickness_nm: 28.77
+# layer2_material: CO
+# layer2_Thickness_nm: 10.00
+# layer3_material: Cr
+# layer3_Thickness_nm: 0.00
+#
+# === SIMULATION PARAMETERS ===
+# z_resolution_nm: 0.1000
+# x_resolution_nm: 0.1000
+# fourier_orders: 11
+# polarization: TM (-1)
+# grazing_angle_deg: 4.0
+# photon_energy_min_eV: 100.0
+# photon_energy_max_eV: 500.0
+# photon_energy_step_eV: 20.0
+#
+# photon_energy_eV;diffraction_efficiency
+100.0000;0.11425489
+120.0000;0.14868032
+140.0000;0.17969719
+160.0000;0.19943786
+180.0000;0.20858945
+200.0000;0.21376933
+220.0000;0.24041134
+240.0000;0.17030460
+260.0000;0.11593792
+280.0000;0.06959754
+300.0000;0.03120247
+320.0000;0.02335943
+340.0000;0.02045003
+360.0000;0.02322743
+380.0000;0.03100506
+400.0000;0.04263795
+420.0000;0.16445632
+440.0000;0.14552861
+460.0000;0.12557307
+480.0000;0.10470982
+500.0000;0.08358916
