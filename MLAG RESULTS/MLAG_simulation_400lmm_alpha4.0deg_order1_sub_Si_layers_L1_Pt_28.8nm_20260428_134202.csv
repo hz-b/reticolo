@@ -1,0 +1,24 @@
+# SLAG Simulation Data
+# Generated with Example_MLAG.m (Multilayer Version)
+#
+# === GRATING PARAMETERS ===
+# grating_period_lpermm: 400.0
+# diffraction_order: 1
+# grating_width_to_period_ratio: 0.67
+# grating_depth_nm: 14.9
+# trapezoid_angle_left_deg: 75.0
+# trapezoid_angle_right_deg: 75.0
+# substrate_material: Si
+# substrate_density: 2.330
+#
+# === LAYER CONFIGURATION ===
+# active_layers: 1
+#
+# === LAYER 1 (Bottom-most coating) ===
+# layer1_material: Pt
+# layer1_Thickness_nm: 28.77
+# layer1_density: 20.132
+#
+# === LAYER 2 (Middle coating) ===
+# layer2_material: CO
+# layer2_Thickness_nm: 0.00

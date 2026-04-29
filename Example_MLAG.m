@@ -34,10 +34,10 @@ metadata.layer1_material = 'Pt';
 metadata.layer1_Thickness_nm = 28.77; % Set > 0 to activate
 metadata.layer1_density = [20.132]; 
 
-metadata.layer2_material = 'C'; 
-metadata.layer2_Thickness_nm = 0.76;  % Set > 0 to activate
-metadata.layer2_density = [];  % Empty for CXRO file (no density suffix needed)
-metadata.layer2_filename = 'n_C_cxro.txt';  % Specify the exact filename
+% Layer 2 (middle coating)
+metadata.layer2_material = 'CO'; 
+metadata.layer2_Thickness_nm = 0;  % Set > 0 to activate
+metadata.layer2_density = [1.38]; 
 
 % Layer 3 (top-most coating)
 metadata.layer3_material = 'Cr'; 
@@ -50,9 +50,9 @@ metadata.layer3_density = [7.139];
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-metadata.z_resolution_nm = .05 ;%input('z_slicing_step_in_nm: ');
-metadata.x_resolution_nm = .05 ;%input('x_slicing_step_in_nm: ');
-metadata.FourierOrders = 25 ;%input('Harmonics: '); % total Fourier harmonics, should be odd
+metadata.z_resolution_nm = .1 ;%input('z_slicing_step_in_nm: ');
+metadata.x_resolution_nm = .1 ;%input('x_slicing_step_in_nm: ');
+metadata.FourierOrders = 11 ;%input('Harmonics: '); % total Fourier harmonics, should be odd
 metadata.GR_groove = 1; % number of periods in simulation cell
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,20 +109,14 @@ else
     nData_layer1 = [];
 end
 
-% Load layer 2 refractive index (if active) - UPDATED FOR CXRO FILE
+% Load layer 2 refractive index (if active)
 if a.layer2_Thickness_nm > 0
-    if ~isempty(a.layer2_filename) && exist(fullfile(a.reference_dir, a.layer2_filename), 'file')
-        % Use custom filename for CXRO data
-        [nData_layer2, nfile_layer2] = load_custom_refractive_index(a.layer2_filename, a.reference_dir);
-        disp(['Loaded layer 2 refractive index (CXRO): ', nfile_layer2]);
-    else
-        % Fallback to OC_ELISA format
-        [nData_layer2, nfile_layer2] = load_oc_elisa_refractive_index(a.layer2_material, a.reference_dir, a.layer2_density);
-        disp(['Loaded layer 2 refractive index: ', nfile_layer2]);
-    end
+    [nData_layer2, nfile_layer2] = load_oc_elisa_refractive_index(a.layer2_material, a.reference_dir, a.layer2_density);
+    disp(['Loaded layer 2 refractive index: ', nfile_layer2]);
 else
     nData_layer2 = [];
 end
+
 % Load layer 3 refractive index (if active)
 if a.layer3_Thickness_nm > 0
     [nData_layer3, nfile_layer3] = load_oc_elisa_refractive_index(a.layer3_material, a.reference_dir, a.layer3_density);
@@ -273,80 +267,32 @@ if a.layer1_Thickness_nm > 0
     real_layer1  = real(n_layer1); 
 end
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % VISUALIZE MESHGRID
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if i == 1
-    figure('Name', 'MLAG Meshgrid Visualization', 'Position', [100, 100, 1000, 800]);
-    
-    % Plot refractive index distribution (real part)
-    % Use Z as y-axis (inverted to show top-down view)
-    imagesc(x*1e9, flipud(z)*1e9, real(n));
-
-
-    set(gca, 'YDir', 'normal');  % Keep y-axis normal
+    figure('Name', 'MLAG Meshgrid Visualization', ...
+        'Position', [100, 100, 1000, 800]);
+    imagesc(x, z, imag(n));
+    axis xy;
     axis tight;
-    hold on;
-    
-    % Plot surface profile (Prf_z)
-    plot(x*1e9, Prf_z*1e9, 'k-', 'LineWidth', .2);
-     % Build text string for legend
-    legend_text = sprintf('Re(n): n_{inc}=%.3f, n_{sub}=%.3f', real_incident, real_substrate);
-    if a.layer1_Thickness_nm > 0
-        legend_text = [legend_text, sprintf(', n_{L1}=%.3f', real_layer1)];
-    end
-    if a.layer2_Thickness_nm > 0
-        legend_text = [legend_text, sprintf(', n_{L2}=%.3f', real_layer2)];
-    end
-    if a.layer3_Thickness_nm > 0
-        legend_text = [legend_text, sprintf(', n_{L3}=%.3f', real_layer3)];
-    end
-    
-    text(0.02, 0.95, legend_text, ...
-         'FontSize', 10, ...
-         'BackgroundColor', 'w', ...
-         'EdgeColor', 'k');
-         
-    % Plot layer boundaries
-    if a.layer1_Thickness_nm > 0
-        plot(x*1e9, (Prf_z + a.layer1_Thickness_nm)*1e9, 'g--', 'LineWidth', .05);
-    end
-    if a.layer2_Thickness_nm > 0
-        layer2_bottom = Prf_z + a.layer1_Thickness_nm;
-        if a.layer2_Thickness_nm > 0
-            layer2_bottom = layer2_bottom + a.layer2_Thickness_nm;
-        end
-        plot(x*1e9, (layer2_bottom)*1e9, 'r--', 'LineWidth', .05);
-    end
-    if a.layer3_Thickness_nm > 0
-        layer3_bottom = Prf_z + a.layer1_Thickness_nm;
-        if a.layer2_Thickness_nm > 0
-            layer3_bottom = layer3_bottom + a.layer2_Thickness_nm;
-        end
-        plot(x*1e9, (layer3_bottom)*1e9, 'b--', 'LineWidth', .2);
-    end
-    
-    % Add colorbar and labels
+
+    colormap(jet(6));
     colorbar;
-    xlabel('Position (nm)', 'FontSize', 12);
-    ylabel('Height (nm)', 'FontSize', 12);
-    title(sprintf('Refractive Index Distribution (Real Part)'), 'FontSize', 14);
-    caxis([min(real(n(:))), max(real(n(:)))]);
 
-    grid on;
+    hold on;
+    contour(x, z, imag(n), 'k', 'LineWidth', .01);
 
-    
+    xlabel('Position (nm)');
+    ylabel('Height (nm)');
+    title('Imaginary Refractive Index (Layered Structure)');
+
+
     saveas(gcf, 'MLAG_meshgrid_visualization.png');
     disp('Saved meshgrid visualization to: MLAG_meshgrid_visualization.png');
-
-
-    xlim([0.6*1e12 1*1e12]);  
-    ylim([2.75*1e10 4.75*1e10]);  
-    saveas(gcf, 'MLAG_meshgrid_left_wall_visualization.png');
-
 end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BUILD RETICOLO TEXTURES (ONE PER Z-LAYER)
@@ -503,11 +449,7 @@ fprintf(fid, '#\n');
 fprintf(fid, '# === LAYER 2 (Middle coating) ===\n');
 fprintf(fid, '# layer2_material: %s\n', metadata.layer2_material);
 fprintf(fid, '# layer2_Thickness_nm: %.2f\n', metadata.layer2_Thickness_nm);
-if ~isempty(a.layer2_filename)
-    fprintf(fid, '# layer2_refractive_index_file: %s\n', metadata.layer2_filename);
-else
-    fprintf(fid, '# layer2_density: %.3f\n', metadata.layer2_density(1));
-end
+fprintf(fid, '# layer2_density: %.3f\n', metadata.layer2_density(1));
 fprintf(fid, '#\n');
 fprintf(fid, '# === LAYER 3 (Top-most coating) ===\n');
 fprintf(fid, '# layer3_material: %s\n', metadata.layer3_material);

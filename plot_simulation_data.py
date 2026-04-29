@@ -335,7 +335,7 @@ def main():
     """Main function to process and plot simulation data."""
     print("SLAG Simulation Data Plotter")
     
-    simulation_file = 'MLAG_simulation_400lmm_alpha4.0deg_order1_sub_Si_layers_L1_Pt_28.8nm_L2_CO_1.0nm_20260427_134757.csv'
+    simulation_file = 'MLAG_simulation_400lmm_alpha4.0deg_order1_sub_Si_layers_L1_Pt_28.8nm_20260428_134514.csv'
     experimental_file = 'Re__ELISA,_400l_mm_laminar_grating_from_HORIBA/lG400-HZB-ELISA_ascan-energy_alpha-4deg_1-order.csv'
     reflec_diff_file = "Reflec_simulations/Simulations_REFLEC_DiffMOD.txt"
     reflec_specs_file = "Reflec_simulations/Simulations_REFLEC_REFLEC(SPECS).txt"

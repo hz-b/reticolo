@@ -1,0 +1,74 @@
+# SLAG Simulation Data
+# Generated with Example_MLAG.m (Multilayer Version)
+#
+# === GRATING PARAMETERS ===
+# grating_period_lpermm: 400.0
+# diffraction_order: 1
+# grating_width_to_period_ratio: 0.67
+# grating_depth_nm: 14.9
+# trapezoid_angle_left_deg: 75.0
+# trapezoid_angle_right_deg: 75.0
+# substrate_material: Si
+# substrate_density: 2.330
+#
+# === LAYER CONFIGURATION ===
+# active_layers: 2
+#
+# === LAYER 1 (Bottom-most coating) ===
+# layer1_material: Pt
+# layer1_Thickness_nm: 28.77
+# layer1_density: 20.132
+#
+# === LAYER 2 (Middle coating) ===
+# layer2_material: C
+# layer2_Thickness_nm: 0.76
+# layer2_refractive_index_file: n_C_cxro.txt
+#
+# === LAYER 3 (Top-most coating) ===
+# layer3_material: Cr
+# layer3_Thickness_nm: 0.00
+# layer3_density: 7.139
+#
+# === SIMULATION PARAMETERS ===
+# z_resolution_nm: 0.1
+# x_resolution_nm: 0.1
+# fourier_orders: 25
+# polarization: -1.0
+#
+# === INCIDENCE CONDITIONS ===
+# grazing_angle_deg: 4.0
+# photon_energy_min_eV: 100.0
+# photon_energy_max_eV: 500.0
+# photon_energy_step_eV: 20.0
+#
+# === REFRACTIVE INDEX FILES ===
+# substrate_refractive_index_file: /home/rodney/project/reticolo/RE__Sample_RF_file/OC_ELISA_Si_p2.33.csv
+# layer1_refractive_index_file: /home/rodney/project/reticolo/RE__Sample_RF_file/OC_ELISA_Pt_p20.132.csv
+# layer2_refractive_index_file: n_C_cxro.txt
+#
+# === DATA COLUMNS ===
+# Column 1: photon_energy_eV
+# Column 2: diffraction_efficiency
+#
+# photon_energy_eV;diffraction_efficiency
+100.0000;0.11891971
+120.0000;0.15226043
+140.0000;0.17191666
+160.0000;0.16772861
+180.0000;0.15369817
+200.0000;0.14529638
+220.0000;0.15350299
+240.0000;0.10420270
+260.0000;0.06880841
+280.0000;0.04191475
+300.0000;0.02627861
+320.0000;0.01981868
+340.0000;0.02059499
+360.0000;0.02803889
+380.0000;0.04134021
+400.0000;0.05975218
+420.0000;0.15741508
+440.0000;0.14253933
+460.0000;0.12560283
+480.0000;0.10706678
+500.0000;0.08762340
