@@ -288,7 +288,7 @@ for photonEnergy_eV = metadata.photonEnergy_eV
         figure('Name', 'Blazed Grating Meshgrid Visualization', ...
             'Position', [100, 100, 1000, 800]);
  
-        imagesc(x, z, imag(n_grid));
+        imagesc(x, z, imag(n_grid));    
         axis xy;
         axis tight;
  
