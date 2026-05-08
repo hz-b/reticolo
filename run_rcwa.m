@@ -39,7 +39,8 @@ if use_energy_sweep
     if use_cff
         Cff = sweep.Cff;
     else
-        fixed_alpha_deg = sweep.alpha_deg;
+        sweep.alpha_deg = 90 - sweep.alpha_deg;  % default alpha for energy sweep if not specified
+        fixed_alpha_deg = sweep.alpha_deg; %% convert from grazing angle to alpha convention
     end
 elseif use_angle_sweep
     fixed_energy_eV = sweep.energy_eV;
@@ -57,10 +58,10 @@ gr_order  = opt.GR_Order;
 
 
 %  Output accumulators
-out_sweep  = [];
-out_eff    = [];
-out_alpha  = [];
-out_beta   = [];
+out_sweep = [];
+out_eff   = [];
+out_alpha = [];
+out_beta  = [];
 
 
 %  Main sweep loop
@@ -82,7 +83,7 @@ for sv = sweep_values
 
     % resolve alpha
     if use_energy_sweep && use_cff
-        current_alpha_deg = resolve_alpha_cff(lambda_nm, p_nm, gr_order, Cff, photon_eV);
+        current_alpha_deg =resolve_alpha_cff(lambda_nm, p_nm, gr_order, Cff, photon_eV);
         if isnan(current_alpha_deg); continue; end
     elseif use_energy_sweep
         current_alpha_deg = fixed_alpha_deg;
@@ -127,6 +128,7 @@ for sv = sweep_values
     aa = res1(lambda_nm, p_nm, textures, nn, k_parallel, parm);
     ef = res2(aa, profile, parm);
 
+
     % extract order efficiency
     orders    = ef.inc_top_reflected.order(:, 1);
     idx_order = find(orders == gr_order);
@@ -137,9 +139,11 @@ for sv = sweep_values
         end
         continue;
     end
-
+     
+    idx_order
     eff_val  = ef.inc_top_reflected.efficiency(idx_order);
     beta_val = 90 - ef.inc_top_reflected.theta(idx_order);
+    current_alpha_deg = 90 - current_alpha_deg;  % convert back to grazing angle for output
 
     if opt.verbose
         if use_energy_sweep
@@ -160,8 +164,8 @@ end
 %  Assemble results struct
 
 results.efficiency  = out_eff;
-results.alpha_deg   = out_alpha;
-results.beta_deg    = out_beta;
+results.alpha_deg   = 90 - out_alpha;  % convert back from alpha convention to grazing angle
+results.beta_deg    = 90 - out_beta;
 
 if use_energy_sweep
     results.sweep_values = out_sweep;
@@ -180,12 +184,12 @@ fid = fopen(csv_path, 'w');
 if use_energy_sweep
     fprintf(fid, 'PhotonEnergy_eV,GrazingAlpha_deg,DiffractionEfficiency,ExitAngle_beta_deg\n');
     for k = 1:numel(out_sweep)
-        fprintf(fid, '%.4f,%.6f,%.6f,%.6f\n', out_sweep(k), out_alpha(k), out_eff(k), out_beta(k));
+        fprintf(fid, '%.4f,%.6f,%.6f,%.6f\n', out_sweep(k),  out_alpha(k), out_eff(k),  out_beta(k));
     end
 else
     fprintf(fid, 'GrazingAngle_deg,PhotonEnergy_eV,DiffractionEfficiency,ExitAngle_beta_deg\n');
     for k = 1:numel(out_sweep)
-        fprintf(fid, '%.6f,%.4f,%.6f,%.6f\n', out_sweep(k), fixed_energy_eV, out_eff(k), out_beta(k));
+        fprintf(fid, '%.6f,%.4f,%.6f,%.6f\n',  out_sweep(k), fixed_energy_eV, out_eff(k),  out_beta(k));
     end
 end
 fclose(fid);
@@ -257,7 +261,7 @@ function [textures, profile, X, Z, n_grid] = build_reticolo_input(grating, layer
         ylabel(cb, 'Im(n)', 'FontSize', 10);
 
         hold on;
-        contour(x, z, imag(n_grid), 'k', 'LineWidth', 0.2);
+        % contour(x, z, imag(n_grid), 'k', 'LineWidth', 0.2);
 
         xlabel('x (nm)');
         ylabel('z (nm)');
