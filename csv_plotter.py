@@ -5,20 +5,21 @@ import matplotlib.pyplot as plt
 
 # List your CSV files here
 files = [
-    "rcwa_trap_dc0.67_400lmm_d15nm_Si_SiO21nm_Cr6nm_Pt29nm_C1nm_TM_order-1_alpha86.00deg_50-1000eV.csv"
+    "simulation_results_blazed_multilayer.csv"
 ]
 
 plt.figure()
 
 
-labels = ["new constants", "old constants"]  # Adjust labels as needed
+labels = ["reticolo"]  # Adjust labels as needed
 for f in files:
     # Load CSV (adjust if you have headers)
     data = pd.read_csv(f)
 
     # Assume first column = x, second = y
     x = data["PhotonEnergy_eV"]  # or data.iloc[:, 0] if no headers
-    y = data["DiffractionEfficiency"]  # or data.iloc[:, 1] if no headers
+    y = data["DiffractionEfficiency"]
+    y = y/100  # or data.iloc[:, 1] if no headers
     
 
     plt.plot(x, y, label=labels[files.index(f)],linewidth=.5)  # Use label if you want a legend
@@ -35,21 +36,21 @@ for f in files:
 
 
 
-# Load experimental data
-experiment = pd.read_csv(
-    "Re__ELISA,_400l_mm_laminar_grating_from_HORIBA/lG400-HZB-ELISA_ascan-energy_alpha-4deg_1-order.csv",
-    sep=";",
-    decimal=",",
-    skiprows=3,        
-    header=None
-)
+# # Load experimental data
+# experiment = pd.read_csv(
+#     "Re__ELISA,_400l_mm_laminar_grating_from_HORIBA/lG400-HZB-ELISA_ascan-energy_alpha-4deg_1-order.csv",
+#     sep=";",
+#     decimal=",",
+#     skiprows=3,        
+#     header=None
+# )
 
 
-experiment = experiment.dropna(axis=1, how='all')
+# experiment = experiment.dropna(axis=1, how='all')
 
-experiment.columns = ["PhotonEnergy_eV", "DiffractionEfficiency"]
+# experiment.columns = ["PhotonEnergy_eV", "DiffractionEfficiency"]
 
-plt.plot(experiment["PhotonEnergy_eV"], experiment["DiffractionEfficiency"], label="experiment",linewidth=.5)
+# plt.plot(experiment["PhotonEnergy_eV"], experiment["DiffractionEfficiency"], label="experiment",linewidth=.5)
 
 
 
@@ -76,6 +77,19 @@ plt.plot(experiment["PhotonEnergy_eV"], experiment["DiffractionEfficiency"], lab
 # # Plot REFLEC simulation
 # plt.plot(x, y, label='REFLEC',linewidth=.5)
 
+
+
+
+
+retipy_blz = pd.read_csv('blazed_multilayer_all_orders.csv')
+
+
+# Filter for order == -1
+retipy_blz_minus1 = retipy_blz[retipy_blz['order'] == -2]
+
+# Create the plot
+plt.plot(retipy_blz_minus1['energy_ev'], retipy_blz_minus1['efficiency'], 
+         'b-o', linewidth=.5, markersize=.6)
 
 
 

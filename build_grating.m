@@ -12,10 +12,11 @@ function grating = build_grating(type, period_nm, depth_nm, varargin)
 %   angle_deg     sidewall angle FROM HORIZONTAL (e.g. 75  = grTrapezoidAng_deg)
 %   blaze_deg     blaze angle FROM HORIZONTAL (e.g. 0.729 = grBlazeAngle_deg)
 
-grating.type      = type
-grating.period_nm = period_nm
-grating.depth_nm  = depth_nm
+grating.type      = type;
+grating.period_nm = period_nm;
+grating.depth_nm  = depth_nm;
 
+disp('')
 switch lower(type)
 
     % ------------------------------------------------------------------

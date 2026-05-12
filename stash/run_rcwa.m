@@ -33,26 +33,21 @@ warning('off', 'all');
 
 use_energy_sweep = strcmpi(sweep.type, 'energy');
 use_angle_sweep  = strcmpi(sweep.type, 'alpha');
-use_bragg_sweep  = strcmpi(sweep.type, 'bragg');
-
 
 if use_energy_sweep
     use_cff = isfield(sweep, 'Cff') && ~isfield(sweep, 'alpha_deg');
     if use_cff
         Cff = sweep.Cff;
     else
-        fixed_alpha_deg = sweep.alpha_deg;
+        sweep.alpha_deg = 90 - sweep.alpha_deg;  % default alpha for energy sweep if not specified
+        fixed_alpha_deg = sweep.alpha_deg; %% convert from grazing angle to alpha convention
     end
 elseif use_angle_sweep
     fixed_energy_eV = sweep.energy_eV;
-elseif use_bragg_sweep
-    if ~isfield(sweep, 'alpha_deg') || numel(sweep.alpha_deg) ~= numel(sweep.values)
-        error('run_rcwa: bragg sweep requires sweep.alpha_deg of same length as sweep.values');
-    end
-    bragg_alpha = sweep.alpha_deg;   % paired alpha lookup
 else
-    error('run_rcwa: sweep.type must be ''energy'', ''alpha'', or ''bragg''');
+    error('run_rcwa: sweep.type must be ''energy'' or ''alpha''');
 end
+
 
 % assign geometry and stack to local variables for convenience
 grating   = stack.grating;
@@ -78,11 +73,11 @@ meshgrid_saved = false;
 
 for sv = sweep_values
 
-    if use_energy_sweep || use_bragg_sweep
+    if use_energy_sweep
         photon_eV = sv;
         lambda_nm = 1239.8 / photon_eV;
     else  % angle sweep
-        photon_eV = fixed_energy_eV
+        photon_eV = fixed_energy_eV;
         lambda_nm = 1239.8 / photon_eV;
     end
 
@@ -92,14 +87,10 @@ for sv = sweep_values
         if isnan(current_alpha_deg); continue; end
     elseif use_energy_sweep
         current_alpha_deg = fixed_alpha_deg;
-    elseif use_bragg_sweep
-        % look up the paired alpha for this energy index
-        sv_idx = find(sweep.values == sv, 1);
-        current_alpha_deg = bragg_alpha(sv_idx);
     else
         current_alpha_deg = sv;   % angle sweep
     end
-    current_alpha_deg = 90 - current_alpha_deg;  % convert to alpha convention for RETICOLO
+
     k_parallel = sin(deg2rad(current_alpha_deg));
 
     % load substrate optical constants 
@@ -137,6 +128,7 @@ for sv = sweep_values
     aa = res1(lambda_nm, p_nm, textures, nn, k_parallel, parm);
     ef = res2(aa, profile, parm);
 
+
     % extract order efficiency
     orders    = ef.inc_top_reflected.order(:, 1);
     idx_order = find(orders == gr_order);
@@ -147,7 +139,8 @@ for sv = sweep_values
         end
         continue;
     end
-
+     
+    idx_order
     eff_val  = ef.inc_top_reflected.efficiency(idx_order);
     beta_val = 90 - ef.inc_top_reflected.theta(idx_order);
     current_alpha_deg = 90 - current_alpha_deg;  % convert back to grazing angle for output
@@ -174,7 +167,7 @@ results.efficiency  = out_eff;
 results.alpha_deg   = 90 - out_alpha;  % convert back from alpha convention to grazing angle
 results.beta_deg    = 90 - out_beta;
 
-if use_energy_sweep || use_bragg_sweep
+if use_energy_sweep
     results.sweep_values = out_sweep;
     results.sweep_label  = 'PhotonEnergy_eV';
 else
@@ -184,18 +177,14 @@ end
 
 %  CSV output
 
-csv_name = "simulation_results.csv";
+csv_name = build_csv_name(stack, substrate_file, sweep, opt);
 csv_path = fullfile(opt.output_dir, csv_name);
 
 fid = fopen(csv_path, 'w');
-if fid < 0
-    error('Cannot open file %s for writing', csv_path);
-end
-
-if use_energy_sweep || use_bragg_sweep
+if use_energy_sweep
     fprintf(fid, 'PhotonEnergy_eV,GrazingAlpha_deg,DiffractionEfficiency,ExitAngle_beta_deg\n');
     for k = 1:numel(out_sweep)
-        fprintf(fid, '%.4f,%.6f,%.6f,%.6f\n', out_sweep(k), out_alpha(k), out_eff(k), out_beta(k));
+        fprintf(fid, '%.4f,%.6f,%.6f,%.6f\n', out_sweep(k),  out_alpha(k), out_eff(k),  out_beta(k));
     end
 else
     fprintf(fid, 'GrazingAngle_deg,PhotonEnergy_eV,DiffractionEfficiency,ExitAngle_beta_deg\n');
@@ -214,15 +203,12 @@ end
 
 %  Internal helper functions  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [textures, profile, X, Z, n_grid] = build_reticolo_input( ...
-        grating, layers, n_layers, n_sub, n_inc, z_res_nm)
-% Build the z stack, fill the refractive-index meshgrid, and compress into
-% RETICOLO texture cells + a profile descriptor.
-%
-% Filling order
-% 1. Everything = n_sub  (substrate)
-% 2. Everything above grating surface (Prf0) = n_inc  (vacuum)
-% 3. For each coating layer i: band between Prf_{i-1} and Prf_i = n_layers{i}
+function [textures, profile, X, Z, n_grid] = build_reticolo_input(grating, layers, n_layers, n_sub, n_inc, z_res_nm)
+
+% Filling order:
+%   1. Everything = n_sub  (substrate)
+%   2. Everything above grating surface (Prf0) = n_inc  (vacuum)
+%   3. For each coating layer i: band between Prf_{i-1} and Prf_i = n_layers{i}
 
     x        = grating.x;
     Prf0     = grating.z_surface;   % grating surface height at each x [1 x Nx]
@@ -239,16 +225,17 @@ function [textures, profile, X, Z, n_grid] = build_reticolo_input( ...
     N_z      = numel(z);
 
     [X, Z]  = meshgrid(x, z);
+
     n_grid  = X .* 0;   % real zero, same size — matches original idiom
 
-    % --- Step 1: fill everything with substrate ------------------------------
+    %fill everything with substrate index first
     n_grid(:) = n_sub;
 
-    % --- step 2: vacuum above grating surface --------------------------------
+    %vacuum above grating surface 
     P = find(Z >= Prf0);
     n_grid(P) = n_inc;
 
-    % --- Step 3: fill each coating layer (conformal, bottom to top) ----------
+    % fill each coating 
     % Prf_bot and Prf_top are [1 x Nx] surfaces that follow the grating shape.
     Prf_bot = Prf0;
     for li = 1:numel(layers)
@@ -258,8 +245,39 @@ function [textures, profile, X, Z, n_grid] = build_reticolo_input( ...
         Prf_bot = Prf_top;
     end
 
-    % --- compress into RETICOLO texture cells --------------------------------
-    % Follows original exactly: find column-wise jumps in n_grid, sort by row,
+    global meshgrid_saved;  % flag to save meshgrid plot only once
+
+    % Mesh plot of groove profile (optional)
+    if ~meshgrid_saved
+
+        figure('Name','Grating Meshgrid','Position',[100 100 1000 800]);
+
+        imagesc(x, z, imag(n_grid));
+        axis xy;
+        axis tight;
+
+        colormap(jet(6));
+        cb = colorbar;
+        ylabel(cb, 'Im(n)', 'FontSize', 10);
+
+        hold on;
+        % contour(x, z, imag(n_grid), 'k', 'LineWidth', 0.2);
+
+        xlabel('x (nm)');
+        ylabel('z (nm)');
+
+        set(gca, 'FontSize', 11);
+
+        saveas(gcf, 'grating_meshgrid.png');
+
+        meshgrid_saved = true;
+    end
+
+
+    % compress into RETICOLO texture cells :
+    % RETICOLO needs textures defined by jump positions and values.
+    % So we find all the jumps in n_grid along z, then for each layer build a texture cell from jump positions and values.
+    % We also build a texture cell for the incident medium (vacuum) and substrate, then assemble into a profile list.
     % then for each z-layer build a texture cell from jump positions and values.
 
     deltan = diff(n_grid, 1, 2);
@@ -287,12 +305,11 @@ function [textures, profile, X, Z, n_grid] = build_reticolo_input( ...
 end
 
 
-% -------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function n_cmpl = load_cxro(filepath, photon_eV)
 % Load a CXRO optical constants file and interpolate at photon_eV.
 % Returns n = 1 - delta + i*beta.
-% Returns NaN + 0i if out of range.
 
     if exist(filepath, 'file') ~= 2
         error('load_cxro: file not found: %s', filepath);
@@ -308,7 +325,7 @@ function n_cmpl = load_cxro(filepath, photon_eV)
 end
 
 
-% -------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function alpha_deg = resolve_alpha_cff(lambda_nm, p_nm, gr_order, Cff, photon_eV)
 % Compute grazing incidence angle from Cff and the grating equation.
@@ -354,7 +371,8 @@ function alpha_deg = resolve_alpha_cff(lambda_nm, p_nm, gr_order, Cff, photon_eV
 end
 
 
-% -------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 function name = build_csv_name(stack, substrate_file, sweep, opt)
 % Build a descriptive CSV filename from simulation parameters.
@@ -367,7 +385,7 @@ function name = build_csv_name(stack, substrate_file, sweep, opt)
             grating_tag = sprintf('blazed_b%.2fdeg_ab%.2fdeg', ...
                 g.params.blaze_deg, g.params.antiblaze_deg);
         case 'trapezoidal'
-            grating_tag = sprintf('trap_dc%.2f', g.params.duty_cycle);
+            grating_tag = sprintf('trap_dc%.2f', g.params.width_ratio);
     end
 
     period_tag = sprintf('%.0flmm', round(1e6 / g.period_nm));
@@ -403,9 +421,6 @@ function name = build_csv_name(stack, substrate_file, sweep, opt)
             end
         case 'alpha'
             sweep_tag = sprintf('%.0feV_alpha%.2f-%.2fdeg', sweep.energy_eV, ...
-                min(sweep.values), max(sweep.values));
-        case 'bragg'
-            sweep_tag = sprintf('bragg_%.0f-%.0feV', ...
                 min(sweep.values), max(sweep.values));
     end
 
