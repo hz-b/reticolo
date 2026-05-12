@@ -7,7 +7,7 @@ warning('off', 'all')
 % Resolution parameters--------------------------------
 
 x_res_nm             = .1;
-z_res_nm             = .05;
+z_res_nm             = .1;
 
 
 % Blazed grating parameters--------------------------------
@@ -78,7 +78,7 @@ end
 %sweep.values    = 0.5:0.1:5.0;
 %sweep.energy_eV = 500;
 
-sweep = load_bragg_table('DiffractMod_CrC_d4.8_N60.dat', [3500,3752,4100,4500]);
+sweep = load_bragg_table('DiffractMod_CrC_d4.8_N60.dat', 3000:25:4600);
 
 
 

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # List your CSV files here
 files = [
-    "simulation_results_blazed_multilayer.csv"
+    "simulation_results.csv"
 ]
 
 plt.figure()
@@ -18,11 +18,10 @@ for f in files:
 
     # Assume first column = x, second = y
     x = data["PhotonEnergy_eV"]  # or data.iloc[:, 0] if no headers
-    y = data["DiffractionEfficiency"]
-    y = y/100  # or data.iloc[:, 1] if no headers
+    y = data["DiffractionEfficiency"]  # or data.iloc[:, 1] if no headers
     
 
-    plt.plot(x, y, label=labels[files.index(f)],linewidth=.5)  # Use label if you want a legend
+    plt.plot(x, y, 'g-x', label=labels[files.index(f)],linewidth=.1,markersize=3)  # Use label if you want a legend
 
 
 
