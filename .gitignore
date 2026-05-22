@@ -1,0 +1,12 @@
+vault/
+source/
+.venv/
+venv/
+octave-workspace
+__pycache__/
+.pytest_cache/
+
+# Generated outputs
+*.png
+Examples/*/*/Results/*.csv
+Examples/*/*/Results/*.dat

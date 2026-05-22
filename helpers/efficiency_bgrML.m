@@ -9,7 +9,8 @@ fprintf('\n[efficiency_bgrML] Starting simulation at %s\n', datestr(now, 'HH:MM:
 fprintf('   Photon energy: %.1f eV | Grating: %d l/mm | Grazing: %.3f°\n', ...
         photonEnergy_eV, grPeriod_lpermm, grazing_angle_deg);
 
-addpath(genpath('V7-reticolo-blazr/RETICOLO V7'))
+base = fileparts(mfilename('fullpath'));
+addpath(genpath(fullfile(base, '..', 'V7-reticolo-blazr', 'RETICOLO V7')));
 retio
 
 % Number of Fourier orders
