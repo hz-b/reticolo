@@ -1,12 +1,8 @@
 % Fixed Angle Energy Sweep — Single Layer Blazed Grating Simulation
-%
-% Sweeps photon energy at a fixed grazing incidence angle.
-% Use this mode when you want to characterise efficiency vs. energy for
-% a fixed beamline geometry (no Bragg tracking needed).
-%
+
 % Grating : 600 l/mm single-layer Au on Si
 % Sweep   : energy 50–2000 eV at fixed grazing angle alpha_deg
-% Output  : efficiency CSV + plot saved to Results/
+
 
 clear; warning('off', 'all');
 
@@ -51,9 +47,9 @@ stack = add_layer(stack, fullfile(oc_path, 'n_Au_cxro.txt'), 31);   % 31 nm Au c
 % run_rcwa solve the grating equation for the angle at each energy.
 
 sweep.type      = 'energy';
-sweep.values    = 50:10:2000;
-sweep.alpha_deg = 4;        % fixed grazing incidence angle in degrees
-% sweep.Cff     = 2.25;     % uncomment to use Cff-based angle instead
+sweep.values    = 50:20:2000;
+% sweep.alpha_deg = 4;        % fixed grazing incidence angle in degrees
+sweep.Cff     = 2.25;     % uncomment to use Cff-based angle instead
 
 
 % Solver options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,8 +83,13 @@ xlabel('Photon Energy (eV)', 'FontSize', 12);
 ylabel('Diffraction Efficiency (%)', 'FontSize', 12);
 
 pol_str = 'TM'; if options.pol == 1; pol_str = 'TE'; end
-title(sprintf('Fixed Angle Energy Sweep | %d l/mm | α=%.2f° | %s | Order %+d', ...
-    grPeriod_lpermm, sweep.alpha_deg, pol_str, options.GR_Order), 'FontSize', 11);
+if isfield(sweep, 'Cff')
+    inc_tag = sprintf('Cff=%.2f', sweep.Cff);
+else
+    inc_tag = sprintf('α=%.2f°', sweep.alpha_deg);
+end
+title(sprintf('Energy Sweep | %d l/mm | %s | %s | Order %+d', ...
+    grPeriod_lpermm, inc_tag, pol_str, options.GR_Order), 'FontSize', 11);
 
 grid on;
 set(gca, 'FontSize', 11);

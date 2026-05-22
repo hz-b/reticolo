@@ -1,9 +1,4 @@
 % Single Layer Laminar (Trapezoidal) Grating — Geometry and Meshgrid Visualisation
-%
-% Builds a laminar (trapezoidal-profile) grating with 15-degree sidewalls and
-% a 1 nm carbon contamination layer, then renders the refractive-index
-% cross-section at a chosen photon energy.
-% No RCWA solve is performed — this script is purely for geometry inspection.
 
 clear; warning('off', 'all');
 

@@ -1,8 +1,5 @@
 % Single Layer Blazed Grating — Geometry and Meshgrid Visualisation
-%
-% Builds a single-layer Au-coated blazed grating on a Si substrate and
-% renders the refractive-index cross-section at a chosen photon energy.
-% No RCWA solve is performed — this script is purely for geometry inspection.
+
 
 clear; warning('off', 'all');
 

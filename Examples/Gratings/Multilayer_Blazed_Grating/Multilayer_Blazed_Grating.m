@@ -1,11 +1,4 @@
 % Multilayer Blazed Grating — Geometry and Meshgrid Visualisation
-%
-% Builds a Cr/C multilayer-coated blazed grating on a Si substrate and
-% renders the refractive-index cross-section at a chosen photon energy.
-% No RCWA solve is performed — this script is purely for geometry inspection.
-%
-% The multilayer stack uses a Bragg-resonance design for soft X-ray diffraction.
-% Each period consists of a high-Z layer (Cr) and a low-Z spacer (C).
 
 clear; warning('off', 'all');
 

@@ -49,8 +49,8 @@ stack = add_layer(stack, fullfile(oc_path, 'n_Au_cxro.txt'), 31);   % 31 nm Au c
 % Fixed photon energy: solve efficiency as a function of grazing angle.
 
 sweep.type      = 'alpha';
-sweep.values    = 0.5:0.1:8.0;    % grazing incidence angles in degrees
-sweep.energy_eV = 500;            % fixed photon energy in eV
+sweep.values    = 0.3:0.1:6.0;    % grazing incidence angles in degrees
+sweep.energy_eV = 1000;            % fixed photon energy in eV
 
 
 % Solver options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

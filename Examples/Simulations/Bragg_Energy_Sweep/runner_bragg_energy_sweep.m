@@ -1,13 +1,7 @@
 % Bragg Energy Sweep — Multilayer Blazed Grating Simulation
 %
-% Sweeps photon energy while tracking the Bragg condition using a pre-computed
-% lookup table (bragg_lookup_table.csv).  This is the monochromator-style scan
-% where both energy and incidence angle change together to keep the multilayer
-% reflectance peak aligned with the diffraction order.
-%
 % Grating : 2400 l/mm blazed Cr/C multilayer on Si
 % Sweep   : energy sweep along Bragg condition (lookup table)
-% Output  : efficiency CSV + plot saved to Results/
 
 clear; warning('off', 'all');
 
@@ -62,12 +56,12 @@ end
 % simulate as the second argument to clip the table.
 
 bragg_table_file = fullfile(base, 'bragg_lookup_table.csv');
-sweep = load_bragg_table(bragg_table_file, 3000:25:4600);
+sweep = load_bragg_table(bragg_table_file, 500:400:6000);
 
 
 % Solver options %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-options.FourierOrders = 15;
+options.FourierOrders = 11;
 options.pol           = -1;          % -1 = TM,  +1 = TE
 options.GR_Order      = -2;
 options.z_res_nm      = z_res_nm;
