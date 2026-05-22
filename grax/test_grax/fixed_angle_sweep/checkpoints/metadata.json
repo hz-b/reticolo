@@ -1,8 +1,0 @@
-{
-  "created": "2026-05-12T14:51:30.896476",
-  "execution_mode": "inline",
-  "max_workers": "auto",
-  "resolved_max_workers": 10,
-  "default_diffraction_order": 1,
-  "default_fourier_orders": 25
-}
